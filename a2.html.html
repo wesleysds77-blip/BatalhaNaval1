@@ -4,49 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Minas Navais</title>
-    <style>
-        html,
-        body {
-            height: 130%;
-            margin: 0;
-        }
 
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #7a7a7a;
-        }
 
-        #camp {
-            display: grid;
-            grid-template-columns: repeat(10, 80px);
-            grid-template-rows: repeat(10, 80px);
-            gap: 2px;
-            background: url('agua.png');
-            padding: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
+    <link rel="stylesheet" href="st.css">
 
-        .celCamp {
-            width: 80px;
-            height: 80px;
-            background-size: cover;
-            background-position: center;
-            cursor: pointer;
-        }
 
-        input[type="button"] {
-            margin-top: 12px;
-        }
-    </style>
 </head>
-
 <body>
-    <audio id="audio" src=""></audio>
+
     <div id="camp"></div>
-    <div id="lives" style="display:flex;gap:8px;margin-top:12px; justify-content:center;">
+
+    <div id="lives"
+        style="display:flex;gap:8px;margin-top:12px;justify-content:center;">
         <img id="life1" src="corac.png" alt="vida" width="40" height="40">
         <img id="life2" src="corac.png" alt="vida" width="40" height="40">
         <img id="life3" src="corac.png" alt="vida" width="40" height="40">
@@ -55,6 +24,7 @@
     </div>
 
     <script>
+
         const imagens = {
             oculta: 'fire.png',
             agua: 'nada.png',
@@ -91,60 +61,140 @@
 
         const tabuleiro = document.querySelector('#camp');
 
-        const audio = document.getElementById("audio");
+       const somExplosao = new Audio(
+    "ElevenLabs_Explosão_em_cena_de_ação.mp3"
+);
+const somAgua = new Audio(
+    "Som da onda.mp3"
+);
+
+const somMadeira = new Audio(
+    "AudioMadeira.mp3"
+);
+
+somExplosao.volume = 0.2;
+somMadeira.volume = 0.3; 
+somAgua.volume = 0.3;
 
         function tocarExplosao() {
-            audio.src = "ElevenLabs_Explosão_em_cena_de_ação.mp3";
-            audio.play();
+            somExplosao.currentTime = 0;
+            somExplosao.play();
         }
 
         function tocarMadeira() {
-            audio.src = "MadeiraExplodindo.mp3";
-            audio.play();
+            somMadeira.currentTime = 0;
+            somMadeira.play();
+        }
+        function tocarAgua(){
+            somAgua.currentTime = 0;
+            somAgua.playbackRate = 2;
+            somAgua.play();
         }
 
         function revelarCasa(celula, conteudo) {
-            if (conteudo == 0) celula.style.backgroundImage = "url('" + imagens.agua + "')";
-            else if (conteudo == 1) celula.style.backgroundImage = "url('" + imagens.barcoVela + "')";
-            else if (conteudo == 2) celula.style.backgroundImage = "url('" + imagens.bote + "')";
-            else if (conteudo == 3) celula.style.backgroundImage = "url('" + imagens.lancha + "')";
-            else if (conteudo == 4) celula.style.backgroundImage = "url('" + imagens.bomba + "')";
+
+            if (conteudo == 0)
+                celula.style.backgroundImage =
+                    "url('" + imagens.agua + "')";
+
+            else if (conteudo == 1)
+                celula.style.backgroundImage =
+                    "url('" + imagens.barcoVela + "')";
+
+            else if (conteudo == 2)
+                celula.style.backgroundImage =
+                    "url('" + imagens.bote + "')";
+
+            else if (conteudo == 3)
+                celula.style.backgroundImage =
+                    "url('" + imagens.lancha + "')";
+
+            else if (conteudo == 4)
+                celula.style.backgroundImage =
+                    "url('" + imagens.bomba + "')";
+        }
+
+        function animarBarco(celula) {
+            celula.classList.add("animarBarco");
+
+            celula.addEventListener("animationend", () => {
+                celula.classList.remove("animarBarco");
+            }, { once: true });
+        }
+
+        function animarOnda(celula) {
+            celula.classList.add("animarOnda");
+
+            celula.addEventListener("animationend", () => {
+                celula.classList.remove("animarOnda");
+            }, { once: true });
+        }
+
+        function animarBomba(celula) {
+            celula.classList.add("animarBomba");
+
+            celula.addEventListener("animationend", () => {
+                celula.classList.remove("animarBomba");
+            }, { once: true });
         }
 
         function revelarVizinhos(indice) {
+
             const direcoes = [-10, 10, -1, 1];
 
             for (const direcao of direcoes) {
+
                 const posicao = indice + direcao;
 
                 if (posicao < 0 || posicao >= 100) continue;
+
                 if (direcao == -1 && indice % 10 == 0) continue;
+
                 if (direcao == 1 && indice % 10 == 9) continue;
 
-                const celulaVizinha = tabuleiro.children[posicao];
+                const celulaVizinha =
+                    tabuleiro.children[posicao];
 
                 if (celulaVizinha) {
-                    revelarCasa(celulaVizinha, mapa[posicao]);
+                    revelarCasa(
+                        celulaVizinha,
+                        mapa[posicao]
+                    );
                 }
             }
         }
 
         function ganharVida() {
-            const vidas = Array.from(document.querySelectorAll('#lives img'));
+
+            const vidas =
+                Array.from(
+                    document.querySelectorAll('#lives img')
+                );
 
             for (let i = 0; i < vidas.length; i++) {
-                if (vidas[i].getAttribute('src') == imagens.coracaoVazio) {
-                    vidas[i].setAttribute('src', imagens.coracao);
+
+                if (
+                    vidas[i].getAttribute('src')
+                    == imagens.coracaoVazio
+                ) {
+                    vidas[i].setAttribute(
+                        'src',
+                        imagens.coracao
+                    );
                     break;
                 }
             }
         }
 
         for (let i = 0; i < 100; i++) {
-            const celula = document.createElement('div');
+
+            const celula =
+                document.createElement('div');
 
             celula.classList.add('celCamp');
-            celula.style.backgroundImage = "url('" + imagens.oculta + "')";
+
+            celula.style.backgroundImage =
+                "url('" + imagens.oculta + "')";
 
             const conteudo = mapa[i];
 
@@ -152,38 +202,81 @@
 
             celula.addEventListener('click', () => {
 
-                if (celula.dataset.revelada === 'true') return;
+                if (
+                    celula.dataset.revelada === 'true'
+                ) return;
 
                 celula.dataset.revelada = 'true';
 
                 revelarCasa(celula, conteudo);
 
-                if (conteudo >= 1 && conteudo <= 3) {
+                if (conteudo == 0) {
+                    tocarAgua();
+                    animarOnda(celula);
+                }
+
+                if (
+                    conteudo >= 1 &&
+                    conteudo <= 3
+                ) {
+
+                    tocarMadeira();
+
+                    animarBarco(celula);
+
                     ganharVida();
+
                     revelarVizinhos(i);
                 }
 
                 if (conteudo == 4) {
+
+                    animarBomba(celula);
+
                     tocarExplosao();
 
-                    const vidas = Array.from(document.querySelectorAll('#lives img'));
+                    const vidas =
+                        Array.from(
+                            document.querySelectorAll(
+                                '#lives img'
+                            )
+                        );
 
-                    for (let j = vidas.length - 1; j >= 0; j--) {
-                        if (vidas[j].getAttribute('src') == imagens.coracao) {
-                            vidas[j].setAttribute('src', imagens.coracaoVazio);
+                    for (
+                        let j = vidas.length - 1;
+                        j >= 0;
+                        j--
+                    ) {
+
+                        if (
+                            vidas[j].getAttribute('src')
+                            == imagens.coracao
+                        ) {
+
+                            vidas[j].setAttribute(
+                                'src',
+                                imagens.coracaoVazio
+                            );
+
                             break;
                         }
                     }
 
-                    const semVidas = vidas.every(
-                        vida => vida.getAttribute('src') == imagens.coracaoVazio
-                    );
+                    const semVidas =
+                        vidas.every(
+                            vida =>
+                                vida.getAttribute('src')
+                                == imagens.coracaoVazio
+                        );
 
                     if (semVidas) {
-                        tocarMadeira();
+
                         setTimeout(() => {
+
                             alert('voce perdeu');
+
                             location.reload();
+
                         }, 800);
                     }
                 }
@@ -191,8 +284,14 @@
 
             tabuleiro.appendChild(celula);
         }
+
     </script>
-    <input type="button" value="Reiniciar" onclick="location.reload()">
+
+    <input
+        type="button"
+        value="Reiniciar"
+        onclick="location.reload()">
+
 </body>
 
 </html>
